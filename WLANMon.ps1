@@ -1,6 +1,6 @@
-﻿##############################################################################################
+﻿##########################################################################
 #
-# Windows Netsh WLANMon Powershell script BETA v0.02
+# Windows Netsh WLANMon Powershell script BETA v0.1
 #
 # The inspiration and starting place for this script was Nigel Bowden's powershell script
 # http://wifinigel.blogspot.com/2016/09/getting-data-out-of-windows-netsh-wlan.html
@@ -21,13 +21,9 @@
 #
 #       Get-ExecutionPolicy
 #
-# Versions:
-# BETA V0.01 - Oringal
-# BETA V0.02 - Chnaged log output to ASCII, SO Log csv file will open correclty in Excel
-##########################################################################################
+##########################################################################
 
 
-#Define and buid window GUI
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
@@ -149,7 +145,7 @@ $RadioType.Font                  = 'Microsoft Sans Serif,10'
 $RadioType.ForeColor             = "#ffffff"
 
 $RSSIDBLabel                     = New-Object system.Windows.Forms.Label
-$RSSIDBLabel.text                = "Signal(dBm)"
+$RSSIDBLabel.text                = "Signal (dB)"
 $RSSIDBLabel.AutoSize            = $true
 $RSSIDBLabel.width               = 25
 $RSSIDBLabel.height              = 10
@@ -232,7 +228,7 @@ $RoamingList.location            = New-Object System.Drawing.Point(22,55)
 
 
 $AuthentictionLabel              = New-Object system.Windows.Forms.Label
-$AuthentictionLabel.text         = "Authentication:"
+$AuthentictionLabel.text         = "Authentiction:"
 $AuthentictionLabel.AutoSize     = $true
 $AuthentictionLabel.width        = 25
 $AuthentictionLabel.height       = 10
@@ -453,7 +449,7 @@ If ($StartButton.text -eq "Start") {
    If ($LogCheckbox.Checked -eq $true) {
       $LoggingEnabled = $true
       $headers = "CurrentTime, Name, Description, GUID, MAC, State, SSID, BSSID, NetworkType, RadioType, Authentication, Cipher, Connection, Channel, RecRate, TransRate, SignalLevelPercent, SignalLeveldBm, Profile"
-      $headers | Out-File -FilePath $filename -Encoding ascii	  
+      $headers > $filename 
    }
 }
 else {
@@ -550,7 +546,7 @@ Do{
     $TxRate = ($TransRate_line -split ":")[-1].Trim()
     $TXDataRate.text = $TxRate
 
-    #Evaluate transmit and recieve data rate against requirements
+    #Evaluate transmit and recieve data rate to requirements
 	if([int]$RXDataRate.text -lt [int]$DataRateReqirment.text) {
 		$RXDataRate.ForeColor = "#d0021b"
 	} else {
@@ -573,7 +569,7 @@ Do{
     $dBmSig = (([int]$SignalLevelPercent_trimmed)/2) - 100
 	$SignaldB.text = $dBmSig
 
-    #Evaluated signal strength against requirment 
+    #Evaluated signal strength to requirment 
 	if($dBmSig -lt [int]$SignalRequirment.text) {
 		$SignaldB.ForeColor = "#d0021b"
 		$SignalPercent.ForeColor = "#d0021b"
@@ -623,10 +619,10 @@ If ($LogCheckbox.checked) {
    $logline = "$CurrentTime, $Name, $Adaptor, $GUID, $MACAdd, $State, $SSIDText, $BSSIDText, $NetworkType, $RadType, $Auth, $CipherText, $Connection, $Chan, $RxRate, $TxRate, $SignalLevelPercent, $dBmSig, $Profile"
 
    if ($LoggingEnabled -eq $true) {
-      $logline | Out-File -append -FilePath $filename -Encoding ascii
+      $logline >> $filename
    } else {
-      $headers | Out-File -FilePath $filename -Encoding ascii
-      $logline | Out-File -append -FilePath $filename -Encoding ascii
+      $headers > $filename
+	  $logline >> $filename
 
 	  $LoggingEnabled = $true
    }
